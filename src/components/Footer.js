@@ -1,6 +1,14 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
+  const socialLinks = [
+    { name: 'Twitter', icon: '/images/twitter.png', url: 'https://twitter.com/' },
+    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com/' },
+    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://facebook.com/' },
+    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://instagram.com/' }
+  ];
+
   return (
     <footer className="footer">
       <div className="footer-content">
@@ -27,10 +35,22 @@ export default function Footer() {
         <div className="footer-section">
           <h4>Follow Us</h4>
           <div className="social-icons">
-            <a href="#" ><img src="/images/twitter.png" alt="Twitter" /></a>
-            <a href="#" ><img src="/images/facebook.png" alt="Facebook" /></a>
-            <a href="#" ><img src="/images/instagram.png" alt="Instagram" /></a>
-            <a href="#" ><img src="/images/youtube.png" alt="YouTube" /></a>
+            {socialLinks.map((social) => (
+              <a 
+                key={social.name}
+                href={social.url} 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.name}
+              >
+                <Image 
+                  src={social.icon} 
+                  alt={social.name}
+                  width={50}
+                  height={50}
+                />
+              </a>
+            ))}
           </div>
         </div>
       </div>

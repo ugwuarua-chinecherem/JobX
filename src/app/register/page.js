@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,6 +12,13 @@ export default function RegisterPage() {
     email: '',
     state: ''
   });
+
+  const socialLinks = [
+    { name: 'Twitter', icon: '/images/twitter.png', url: 'https://twitter.com' },
+    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com' },
+    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://facebook.com' },
+    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://instagram.com' }
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -96,10 +104,23 @@ export default function RegisterPage() {
         <div className="social-login">
           <p>Or connect with:</p>
           <div className="social-icons">
-            <img src="/images/twitter.png" alt="Twitter" />
-            <img src="/images/youtube.png" alt="YouTube" />
-            <img src="/images/facebook.png" alt="Facebook" />
-            <img src="/images/instagram.png" alt="Instagram" />
+            {socialLinks.map((social) => (
+              <a 
+                key={social.name}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-btn"
+                aria-label={social.name}
+              >
+                <Image 
+                  src={social.icon} 
+                  alt={social.name}
+                  width={50}
+                  height={50}
+                />
+              </a>
+            ))}
           </div>
         </div>
 

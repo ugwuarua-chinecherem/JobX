@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { jobs } from '../data/jobs';
+import Image from 'next/image';
 
 export default function Home() {
   const quickActions = [
@@ -63,13 +64,14 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-      <section className="cta-banner cta-banner-with-bg">
-        <div className="banner-overlay"></div>
-        <div className="banner-content">
-          <h2>MILLIONS OF YOUTHS ARE BUILDING THEIR CAREER & ENJOYING REMOTE JOBS NOW.</h2>
-          <Link href="/register" className="banner-button">Get Started🚀</Link>
-        </div>
-      </section>
+{/* CTA Banner */}
+<section className="cta-banner cta-banner-with-bg">
+  <div className="banner-overlay"></div>
+  <div className="banner-content">
+    <h2>MILLIONS OF YOUTHS <pre></pre>ARE BUILDING THEIR CAREER<pre></pre> & ENJOYING REMOTE JOBS NOW.</h2>
+    <Link href="/register" className="banner-button">Get Started🚀</Link>
+  </div>
+</section>
     </div>
   );
 }

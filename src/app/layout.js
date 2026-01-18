@@ -5,8 +5,8 @@ import NavigationHandler from '../components/NavigationHandler';
 import './globals.css';
 
 export const metadata = {
-  title: 'Pelado - Youth Jobs & Skills Platform',
-  description: 'Find jobs, build skills, get hired',
+  title: 'JobX',
+  description: 'Youth Jobs & Skills Platform',
 };
 
 export default function RootLayout({ children }) {

@@ -1,18 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close menu when route changes
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuOpen && !event.target.closest('.nav-container')) {
@@ -27,8 +26,15 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-container">
-        <Link href="/" className="logo">
-          Pelado
+        <Link href="/" className="logo-container">
+          <Image 
+            src="/images/JobX.png" 
+            alt="JobX Logo" 
+            width={40} 
+            height={40}
+            className="logo-image"
+          />
+          <span className="logo-text">JobX</span>
         </Link>
 
         <button 

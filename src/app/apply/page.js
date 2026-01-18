@@ -32,7 +32,6 @@ export default function ApplyPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission
     console.log('Form submitted:', formData);
     router.push('/success');
   };
@@ -116,13 +115,30 @@ export default function ApplyPage() {
 
           <div className="form-group">
             <label>Upload CV</label>
-            <input
-              type="file"
-              name="cv"
-              onChange={handleFileChange}
-              accept=".pdf,.doc,.docx"
-              required
-            />
+            <div className="file-upload-box">
+              <input
+                type="file"
+                name="cv"
+                id="cv-upload"
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx"
+                required
+                className="file-input"
+              />
+              <label htmlFor="cv-upload" className="file-upload-label">
+                <div className="upload-icon">📄</div>
+                <div className="upload-text">
+                  {formData.cv ? (
+                    <span className="file-selected">{formData.cv.name}</span>
+                  ) : (
+                    <>
+                      <span className="upload-title">Click to upload or drag and drop</span>
+                      <span className="upload-subtitle">PDF, DOC, DOCX (Max 5MB)</span>
+                    </>
+                  )}
+                </div>
+              </label>
+            </div>
           </div>
 
           <div className="form-group">
@@ -132,7 +148,7 @@ export default function ApplyPage() {
               value={formData.coverLetter}
               onChange={handleChange}
               rows="6"
-              placeholder="Tell us why you're a great fit..."
+              placeholder="Tell us why you're a great fit for this role..."
             />
           </div>
 

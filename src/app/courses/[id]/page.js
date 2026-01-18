@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Link from 'next/link'; // ADD THIS LINE
 import { courses } from '../../../data/courses';
 
 export default function CourseDetails() {
