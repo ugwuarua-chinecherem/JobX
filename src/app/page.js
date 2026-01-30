@@ -4,16 +4,15 @@ import Image from 'next/image';
 
 export default function Home() {
   const quickActions = [
-    { title: 'Find Jobs', icon: <img src="/images/find-jobs.png" alt="Find Jobs" width={24} height={24} />, link: '/jobs' },
-    { title: 'Get Career Tips', icon: <img src="/images/tips.png" alt="Get Career Tips" width={24} height={24} />, link: '/courses' }
+    { title: 'Find Jobs', icon: '/images/find-jobs.png', link: '/jobs' },
+    { title: 'Get Career Tips', icon: '/images/tips.png', link: '/courses' }
   ];
 
-  // Get the actual jobs for recommended section (Research assistant, Customer support, Operations assistant)
   const recommendedJobs = [
     jobs.find(job => job.title === 'Research Assistant'),
     jobs.find(job => job.title === 'Customer Support Agent'),
     jobs.find(job => job.title === 'Operations Assistant')
-  ].filter(Boolean); // Remove any undefined values
+  ].filter(Boolean);
 
   return (
     <div className="homepage">
@@ -21,28 +20,159 @@ export default function Home() {
       <section className="hero hero-with-bg">
         <div className="hero-overlay"></div>
         <div className="hero-content">
-          <h1>Find Jobs, Build Skills, Get Hired</h1>
+          <h1 style={{color: 'white', textShadow: '2px 2px 8px rgba(0,0,0,0.7)'}}> Find Jobs, Build Skills, Get Hired </h1>
           <ul className="hero-list">
-            <li>Looking for a Job online to work from home?</li>
-            <li>Work at your Part time / Full time and earn money from Jobs Online.</li>
-            <li>Work from your PC, Laptop or Mobile</li>
+            <li style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}> Looking for a Job online to work from home? </li>
+            <li style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}> Work at your Part time / Full time and earn money from Jobs Online. </li>
+            <li style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}> Work from your PC, Laptop or Mobile </li>
           </ul>
           <Link href="/register" className="cta-button">Apply now</Link>
         </div>
       </section>
-
       {/* Quick Action */}
       <section className="quick-action">
         <h2>Quick action</h2>
         <div className="action-cards">
           {quickActions.map((action, index) => (
             <Link href={action.link} key={index} className="action-card">
-              <div className="action-icon">{action.icon}</div>
+              <div className="action-icon">
+                <Image src={action.icon} alt={action.title} width={40} height={40} />
+              </div>
               <h3>{action.title}</h3>
             </Link>
           ))}
         </div>
       </section>
+
+      {/* Explainer Video Section */}
+{/* Explainer Video Section */}
+<section className="explainer-section">
+  <div className="explainer-container">
+    <h2>How JobX Works</h2>
+    <p className="explainer-subtitle">Watch our explainer videos to get started</p>
+    
+    <div className="video-slider">
+      <button className="slider-arrow slider-arrow-left" id="prevBtn">
+        ‹
+      </button>
+
+      <div className="video-slider-container" id="videoSlider">
+        {/* Video 1 */}
+        <div className="slider-video active">
+          <iframe 
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+            width="100%" 
+            height="500"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="JobX Introduction"
+          ></iframe>
+          <p className="video-caption">Introduction to JobX Platform</p>
+        </div>
+
+        {/* Video 2 */}
+        <div className="slider-video">
+          <iframe 
+            src="videos/video-1.mp4" 
+            width="100%" 
+            height="500"
+            allowFullScreen
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="How to Apply for Jobs"
+          ></iframe>
+          <p className="video-caption">How to Apply for Jobs</p>
+        </div>
+
+        {/* Video 3 */}
+        <div className="slider-video">
+          <iframe 
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+            width="100%" 
+            height="500"
+            allowFullScreen
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            title="How to Take Courses"
+          ></iframe>
+          <p className="video-caption">How to Enroll in Courses</p>
+        </div>
+      </div>
+
+      <button className="slider-arrow slider-arrow-right" id="nextBtn">
+        ›
+      </button>
+    </div>
+
+    <div className="video-dots" id="videoDots">
+      <span className="dot active" data-index="0"></span>
+      <span className="dot" data-index="1"></span>
+      <span className="dot" data-index="2"></span>
+    </div>
+
+    <div className="explainer-features">
+      <div className="feature-item">
+        <span className="feature-number">1</span>
+        <h3>Register</h3>
+        <p>Create your free account in minutes</p>
+      </div>
+      <div className="feature-item">
+        <span className="feature-number">2</span>
+        <h3>Learn</h3>
+        <p>Enroll in courses to build skills</p>
+      </div>
+      <div className="feature-item">
+        <span className="feature-number">3</span>
+        <h3>Apply</h3>
+        <p>Apply to jobs that match your skills</p>
+      </div>
+      <div className="feature-item">
+        <span className="feature-number">4</span>
+        <h3>Get Hired</h3>
+        <p>Start your remote career</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script dangerouslySetInnerHTML={{__html: `
+  (function() {
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slider-video');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        dots[i].classList.remove('active');
+      });
+      
+      slides[index].classList.add('active');
+      dots[index].classList.add('active');
+      currentSlide = index;
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        const newIndex = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+        showSlide(newIndex);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        const newIndex = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+        showSlide(newIndex);
+      });
+    }
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        showSlide(parseInt(dot.dataset.index));
+      });
+    });
+  })();
+`}} />
 
       {/* Recommended Jobs */}
       <section className="recommended">
@@ -64,14 +194,13 @@ export default function Home() {
       </section>
 
       {/* CTA Banner */}
-{/* CTA Banner */}
-<section className="cta-banner cta-banner-with-bg">
-  <div className="banner-overlay"></div>
-  <div className="banner-content">
-    <h2>MILLIONS OF YOUTHS <pre></pre>ARE BUILDING THEIR CAREER<pre></pre> & ENJOYING REMOTE JOBS NOW.</h2>
-    <Link href="/register" className="banner-button">Get Started🚀</Link>
-  </div>
-</section>
+      <section className="cta-banner cta-banner-with-bg">
+        <div className="banner-overlay"></div>
+        <div className="banner-content">
+          <h2>MILLIONS OF YOUTHS ARE BUILDING THEIR CAREER & ENJOYING REMOTE JOBS NOW.</h2>
+          <Link href="/register" className="banner-button">Get Started🚀</Link>
+        </div>
+      </section>
     </div>
   );
 }

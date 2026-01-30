@@ -1,6 +1,8 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation'
+import { auth } from '@/utils/auth';
+import { jobs } from '@/data/jobs';
 
 export default function ApplyPage() {
   const router = useRouter();

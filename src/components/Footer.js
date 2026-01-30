@@ -3,10 +3,10 @@ import Image from 'next/image';
 
 export default function Footer() {
   const socialLinks = [
-    { name: 'Twitter', icon: '/images/twitter.png', url: 'https://twitter.com/' },
-    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com/' },
-    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://facebook.com/' },
-    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://instagram.com/' }
+    { name: 'Linkedin', icon: '/images/LinkedIN.png', url: 'https://www.linkedin.com/company/learnexity/ LinkedIn' },
+    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com/@learnexity?si=Ig-Fv1u4R4gBpGBi YouTube' },
+    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://www.facebook.com/Learnexity facebook' },
+    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://www.instagram.com/learnexity?igsh=YW1mbWNqaTh3Zzdw Instagram' }
   ];
 
   return (
@@ -29,7 +29,9 @@ export default function Footer() {
         <div className="footer-section">
           <h4>Contact</h4>
           <p>Customer support</p>
-          <p>+234 803 4444 221</p>
+          <a href="tel:+1 (276) 252-8415" className="phone-link">
+            +1 (276) 252-8415
+          </a>
         </div>
 
         <div className="footer-section">
@@ -46,8 +48,8 @@ export default function Footer() {
                 <Image 
                   src={social.icon} 
                   alt={social.name}
-                  width={50}
-                  height={50}
+                  width={45}
+                  height={45}
                 />
               </a>
             ))}

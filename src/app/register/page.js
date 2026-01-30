@@ -1,7 +1,9 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
+import { auth } from '../../utils/auth';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -10,14 +12,16 @@ export default function RegisterPage() {
     lastName: '',
     phoneNumber: '',
     email: '',
-    state: ''
+    state: '',
+    password: ''
   });
+  const [error, setError] = useState('');
 
   const socialLinks = [
-    { name: 'Twitter', icon: '/images/twitter.png', url: 'https://twitter.com' },
-    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com' },
-    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://facebook.com' },
-    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://instagram.com' }
+    { name: 'Twitter', icon: '/images/LinkedIN.png', url: 'https://www.linkedin.com/company/learnexity/ LinkedIn' },
+    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com/@learnexity?si=Ig-Fv1u4R4gBpGBi YouTube' },
+    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://www.facebook.com/Learnexity facebook' },
+    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://www.instagram.com/learnexity?igsh=YW1mbWNqaTh3Zzdw Instagram' }
   ];
 
   const handleChange = (e) => {
@@ -26,21 +30,46 @@ export default function RegisterPage() {
       ...prev,
       [name]: value
     }));
+    setError('');
+  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+  
+  // Basic validation
+  if (formData.password.length < 6) {
+    setError('Password must be at least 6 characters');
+    return;
+  }
+
+  // Register user with password
+  const userData = {
+    name: `${formData.firstName} ${formData.lastName}`,
+    email: formData.email,
+    phone: formData.phoneNumber,
+    state: formData.state,
+    password: formData.password // Pass password here
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Registration data:', formData);
-    router.push('/success');
-  };
+  auth.register(userData);
+  
+  // Redirect to dashboard
+  router.push('/dashboard');
+};
+
 
   return (
     <div className="register-page">
       <div className="register-container">
         <div className="register-header">
-          <h1>Unlock Your potential</h1>
-          <p>Register for our exclusive course</p>
+          <h1>Unlock Your Potential</h1>
+          <p>Register to access exclusive jobs and courses</p>
         </div>
+
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
@@ -98,11 +127,28 @@ export default function RegisterPage() {
             />
           </div>
 
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              minLength="6"
+              placeholder="At least 6 characters"
+            />
+          </div>
+
           <button type="submit" className="register-button">Register</button>
         </form>
 
+        <div className="register-footer">
+          <p>Already have an account? <Link href="/login">Login here</Link></p>
+        </div>
+
         <div className="social-login">
-          <p>Or connect with:</p>
+          <p>Connect with us:</p>
           <div className="social-icons">
             {socialLinks.map((social) => (
               <a 
@@ -116,8 +162,8 @@ export default function RegisterPage() {
                 <Image 
                   src={social.icon} 
                   alt={social.name}
-                  width={50}
-                  height={50}
+                  width={45}
+                  height={45}
                 />
               </a>
             ))}
@@ -126,7 +172,7 @@ export default function RegisterPage() {
 
         <div className="contact-support">
           <p>Customer support</p>
-          <p>+234 803 4444 221</p>
+          <a href="tel:+1 (276) 252-8415">+1 (276) 252-8415</a>
         </div>
       </div>
     </div>
