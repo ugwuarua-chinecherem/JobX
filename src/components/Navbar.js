@@ -42,7 +42,7 @@ return (
 <div className="nav-container">
 <Link href="/" className="logo-container">
 <Image 
-         src="/images/hero.jpeg" 
+         src="/images/JobX.png" 
          alt="JobX Logo" 
          width={60} 
          height={60}
