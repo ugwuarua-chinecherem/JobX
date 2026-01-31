@@ -59,7 +59,7 @@ export default function Home() {
         {/* Video 1 */}
         <div className="slider-video active">
           <video 
-            src="/videos/video-3.mp4" 
+            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769875078/video-3_ractod.mp4" 
             width="100%" 
             height="500"
             controls
