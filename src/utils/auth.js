@@ -1,166 +1,151 @@
-// Authentication utility functions
+// Multi-user authentication system with localStorage
+const AUTH_STORAGE_KEY = 'jobx_users';
+const CURRENT_USER_KEY = 'jobx_current_user';
+
 export const auth = {
-  // Check if user is logged in
-  isLoggedIn: () => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem('jobx_isLoggedIn') === 'true';
+  // Get all registered users
+  getAllUsers() {
+    if (typeof window === 'undefined') return [];
+    const users = localStorage.getItem(AUTH_STORAGE_KEY);
+    return users ? JSON.parse(users) : [];
   },
 
-  // Get current user
-  getUser: () => {
-    if (typeof window === 'undefined') return null;
-    const userStr = localStorage.getItem('jobx_user');
-    return userStr ? JSON.parse(userStr) : null;
+  // Save all users to localStorage
+  saveAllUsers(users) {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(users));
   },
 
-  // Login user - FIXED to use password
-  login: (email, password) => {
-    const storedUser = auth.getUser();
+  // Register a new user
+  register(userData) {
+    const users = this.getAllUsers();
     
-    if (!storedUser) {
-      return { success: false, message: 'No account found. Please register first.' };
+    // Check if email already exists
+    const emailExists = users.find(user => user.email === userData.email);
+    if (emailExists) {
+      return { success: false, message: 'Email already registered' };
     }
 
-    if (storedUser.email !== email) {
-      return { success: false, message: 'Invalid email or password' };
-    }
-
-    // Check password
-    if (storedUser.password !== password) {
-      return { success: false, message: 'Invalid email or password' };
-    }
-
-    // Login successful
-    localStorage.setItem('jobx_isLoggedIn', 'true');
-    return { success: true, user: storedUser };
-  },
-
-  // Register user - UPDATED to store password
-  register: (userData) => {
-    const user = {
-      id: Date.now().toString(),
+    // Create new user object
+    const newUser = {
+      id: Date.now().toString(), // Unique ID based on timestamp
       name: userData.name,
       email: userData.email,
-      phone: userData.phone,
-      state: userData.state,
-      password: userData.password, // Store password
-      registeredAt: new Date().toISOString()
+      password: userData.password, // In production, this should be hashed
+      phone: userData.phone || '',
+      state: userData.state || '',
+      registeredAt: new Date().toISOString(),
+      appliedJobs: []
     };
-    
-    localStorage.setItem('jobx_user', JSON.stringify(user));
-    localStorage.setItem('jobx_isLoggedIn', 'true');
-    return user;
+
+    // Add to users array
+    users.push(newUser);
+    this.saveAllUsers(users);
+
+    return { success: true, message: 'Registration successful', user: newUser };
+  },
+
+  // Login user
+  login(email, password) {
+    const users = this.getAllUsers();
+    const user = users.find(u => u.email === email && u.password === password);
+
+    if (user) {
+      // Save current user (without password for security)
+      const userWithoutPassword = { ...user };
+      delete userWithoutPassword.password;
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(userWithoutPassword));
+      return { success: true, user: userWithoutPassword };
+    }
+
+    return { success: false, message: 'Invalid email or password' };
   },
 
   // Logout user
-  logout: () => {
-    localStorage.setItem('jobx_isLoggedIn', 'false');
-    // Keep user data for login later
+  logout() {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(CURRENT_USER_KEY);
   },
 
-  // Get user's enrollments
-  getEnrollments: () => {
-    if (typeof window === 'undefined') return [];
-    const enrollmentsStr = localStorage.getItem('jobx_enrollments');
-    return enrollmentsStr ? JSON.parse(enrollmentsStr) : [];
+  // Check if user is logged in
+  isLoggedIn() {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem(CURRENT_USER_KEY) !== null;
   },
 
-  // Enroll in course
-  enrollCourse: (courseId, courseTitle) => {
-    const user = auth.getUser();
-    if (!user) return false;
-
-    const enrollments = auth.getEnrollments();
-    
-    const alreadyEnrolled = enrollments.some(
-      e => e.userId === user.id && e.courseId === courseId
-    );
-    
-    if (alreadyEnrolled) return false;
-
-    enrollments.push({
-      userId: user.id,
-      courseId,
-      courseTitle,
-      enrolledAt: new Date().toISOString(),
-      completed: false
-    });
-    
-    localStorage.setItem('jobx_enrollments', JSON.stringify(enrollments));
-    return true;
+  // Get current logged in user
+  getUser() {
+    if (typeof window === 'undefined') return null;
+    const user = localStorage.getItem(CURRENT_USER_KEY);
+    return user ? JSON.parse(user) : null;
   },
 
-  // Check if enrolled in course
-  isEnrolled: (courseId) => {
-    const user = auth.getUser();
-    if (!user) return false;
+  // Update user profile
+  updateUser(updatedData) {
+    const currentUser = this.getUser();
+    if (!currentUser) return { success: false, message: 'No user logged in' };
 
-    const enrollments = auth.getEnrollments();
-    return enrollments.some(
-      e => e.userId === user.id && e.courseId === courseId
-    );
-  },
+    const users = this.getAllUsers();
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
 
-  // Mark course as completed
-  completeCourse: (courseId) => {
-    const user = auth.getUser();
-    if (!user) return false;
-
-    const enrollments = auth.getEnrollments();
-    const enrollment = enrollments.find(
-      e => e.userId === user.id && e.courseId === courseId
-    );
-
-    if (enrollment) {
-      enrollment.completed = true;
-      enrollment.completedAt = new Date().toISOString();
-      localStorage.setItem('jobx_enrollments', JSON.stringify(enrollments));
-      return true;
+    if (userIndex === -1) {
+      return { success: false, message: 'User not found' };
     }
-    return false;
+
+    // Update user data
+    users[userIndex] = { ...users[userIndex], ...updatedData };
+    this.saveAllUsers(users);
+
+    // Update current user in session
+    const updatedUser = { ...users[userIndex] };
+    delete updatedUser.password;
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+
+    return { success: true, user: updatedUser };
   },
 
-  // Get user's applications
-  getApplications: () => {
-    if (typeof window === 'undefined') return [];
-    const applicationsStr = localStorage.getItem('jobx_applications');
-    return applicationsStr ? JSON.parse(applicationsStr) : [];
-  },
+  // Apply for a job
+  applyForJob(jobId, jobTitle, company) {
+    const currentUser = this.getUser();
+    if (!currentUser) return false;
 
-  // Apply for job
-  applyForJob: (jobId, jobTitle, company) => {
-    const user = auth.getUser();
-    if (!user) return false;
+    const users = this.getAllUsers();
+    const userIndex = users.findIndex(u => u.id === currentUser.id);
 
-    const applications = auth.getApplications();
-    
-    const alreadyApplied = applications.some(
-      a => a.userId === user.id && a.jobId === jobId
-    );
-    
+    if (userIndex === -1) return false;
+
+    // Check if already applied
+    const alreadyApplied = users[userIndex].appliedJobs.some(job => job.jobId === jobId);
     if (alreadyApplied) return false;
 
-    applications.push({
-      userId: user.id,
+    // Add job to applied jobs
+    users[userIndex].appliedJobs.push({
       jobId,
       jobTitle,
       company,
-      appliedAt: new Date().toISOString(),
-      status: 'pending'
+      appliedAt: new Date().toISOString()
     });
-    
-    localStorage.setItem('jobx_applications', JSON.stringify(applications));
+
+    this.saveAllUsers(users);
+
+    // Update current user session
+    const updatedUser = { ...users[userIndex] };
+    delete updatedUser.password;
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+
     return true;
   },
 
-  // Check if applied to job
-  hasApplied: (jobId) => {
-    const user = auth.getUser();
-    if (!user) return false;
+  // Check if user has applied to a job
+  hasApplied(jobId) {
+    const currentUser = this.getUser();
+    if (!currentUser) return false;
+    return currentUser.appliedJobs?.some(job => job.jobId === jobId) || false;
+  },
 
-    const applications = auth.getApplications();
-    return applications.some(
-      a => a.userId === user.id && a.jobId === jobId
-    );
+  // Get user's applied jobs
+  getAppliedJobs() {
+    const currentUser = this.getUser();
+    return currentUser?.appliedJobs || [];
   }
 };

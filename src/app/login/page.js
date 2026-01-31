@@ -10,7 +10,8 @@ export default function LoginPage() {
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,38 +19,70 @@ export default function LoginPage() {
       ...prev,
       [name]: value
     }));
-    setError('');
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const result = auth.login(formData.email, formData.password);
-    
-    if (!result.success) {
-      setError(result.message);
+    if (!validateForm()) {
       return;
     }
 
-    // Login successful
-    router.push('/dashboard');
+    setIsSubmitting(true);
+
+    try {
+      const result = auth.login(formData.email, formData.password);
+
+      if (result.success) {
+        alert(`Welcome back, ${result.user.name}!`);
+        router.push('/jobs');
+      } else {
+        setErrors({ general: result.message });
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('An error occurred during login. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-header">
-          <h1>Welcome Back!</h1>
-          <p>Login to continue your journey</p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <h1>Welcome Back</h1>
+          <p>Login to continue your job search</p>
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        <form onSubmit={handleSubmit} className="auth-form">
+          {errors.general && (
+            <div className="error-banner">
+              {errors.general}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label>Email Address</label>
             <input
@@ -57,9 +90,10 @@ export default function LoginPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required
               placeholder="Enter your email"
+              className={errors.email ? 'input-error' : ''}
             />
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
           <div className="form-group">
@@ -69,16 +103,18 @@ export default function LoginPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
               placeholder="Enter your password"
-              minLength="6"
+              className={errors.password ? 'input-error' : ''}
             />
+            {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Logging in...' : 'Login'}
+          </button>
         </form>
 
-        <div className="login-footer">
+        <div className="auth-footer">
           <p>Don't have an account? <Link href="/register">Register here</Link></p>
         </div>
       </div>

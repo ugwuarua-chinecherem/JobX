@@ -2,27 +2,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { auth } from '../../utils/auth';
 
 export default function RegisterPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
+    name: '',
     email: '',
-    state: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    state: ''
   });
-  const [error, setError] = useState('');
-
-  const socialLinks = [
-    { name: 'Twitter', icon: '/images/LinkedIN.png', url: 'https://www.linkedin.com/company/learnexity/ LinkedIn' },
-    { name: 'YouTube', icon: '/images/youtube.png', url: 'https://youtube.com/@learnexity?si=Ig-Fv1u4R4gBpGBi YouTube' },
-    { name: 'Facebook', icon: '/images/facebook.png', url: 'https://www.facebook.com/Learnexity facebook' },
-    { name: 'Instagram', icon: '/images/instagram.png', url: 'https://www.instagram.com/learnexity?igsh=YW1mbWNqaTh3Zzdw Instagram' }
-  ];
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,79 +23,101 @@ export default function RegisterPage() {
       ...prev,
       [name]: value
     }));
-    setError('');
-  };
-const handleSubmit = (e) => {
-  e.preventDefault();
-  
-  // Basic validation
-  if (formData.password.length < 6) {
-    setError('Password must be at least 6 characters');
-    return;
-  }
-
-  // Register user with password
-  const userData = {
-    name: `${formData.firstName} ${formData.lastName}`,
-    email: formData.email,
-    phone: formData.phoneNumber,
-    state: formData.state,
-    password: formData.password // Pass password here
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
-  auth.register(userData);
-  
-  // Redirect to dashboard
-  router.push('/dashboard');
-};
+  const validateForm = () => {
+    const newErrors = {};
 
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    }
+
+    if (!formData.state.trim()) {
+      newErrors.state = 'State is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = auth.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        state: formData.state
+      });
+
+      if (result.success) {
+        // Auto login after successful registration
+        auth.login(formData.email, formData.password);
+        alert('Registration successful! Welcome to JobX!');
+        router.push('/jobs');
+      } else {
+        setErrors({ email: result.message });
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      alert('An error occurred during registration. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <div className="register-page">
-      <div className="register-container">
-        <div className="register-header">
-          <h1>Unlock Your Potential</h1>
-          <p>Register to access exclusive jobs and courses</p>
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-header">
+          <h1>Create Your Account</h1>
+          <p>Join JobX and start your career journey today</p>
         </div>
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="register-form">
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>First Name</label>
+            <label>Full Name</label>
             <input
               type="text"
-              name="firstName"
-              value={formData.firstName}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              required
+              placeholder="Enter your full name"
+              className={errors.name ? 'input-error' : ''}
             />
-          </div>
-
-          <div className="form-group">
-            <label>Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Phone Number</label>
-            <input
-              type="tel"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              required
-            />
+            {errors.name && <span className="error-message">{errors.name}</span>}
           </div>
 
           <div className="form-group">
@@ -112,8 +127,23 @@ const handleSubmit = (e) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required
+              placeholder="Enter your email"
+              className={errors.email ? 'input-error' : ''}
             />
+            {errors.email && <span className="error-message">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label>Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
+              className={errors.phone ? 'input-error' : ''}
+            />
+            {errors.phone && <span className="error-message">{errors.phone}</span>}
           </div>
 
           <div className="form-group">
@@ -123,8 +153,10 @@ const handleSubmit = (e) => {
               name="state"
               value={formData.state}
               onChange={handleChange}
-              required
+              placeholder="Enter your state"
+              className={errors.state ? 'input-error' : ''}
             />
+            {errors.state && <span className="error-message">{errors.state}</span>}
           </div>
 
           <div className="form-group">
@@ -134,45 +166,32 @@ const handleSubmit = (e) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
-              minLength="6"
-              placeholder="At least 6 characters"
+              placeholder="Create a password (min 6 characters)"
+              className={errors.password ? 'input-error' : ''}
             />
+            {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <button type="submit" className="register-button">Register</button>
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              className={errors.confirmPassword ? 'input-error' : ''}
+            />
+            {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
+          </div>
+
+          <button type="submit" className="submit-button" disabled={isSubmitting}>
+            {isSubmitting ? 'Creating Account...' : 'Create Account'}
+          </button>
         </form>
 
-        <div className="register-footer">
+        <div className="auth-footer">
           <p>Already have an account? <Link href="/login">Login here</Link></p>
-        </div>
-
-        <div className="social-login">
-          <p>Connect with us:</p>
-          <div className="social-icons">
-            {socialLinks.map((social) => (
-              <a 
-                key={social.name}
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="social-btn"
-                aria-label={social.name}
-              >
-                <Image 
-                  src={social.icon} 
-                  alt={social.name}
-                  width={45}
-                  height={45}
-                />
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="contact-support">
-          <p>Customer support</p>
-          <a href="tel:+1 (276) 252-8415">+1 (276) 252-8415</a>
         </div>
       </div>
     </div>
