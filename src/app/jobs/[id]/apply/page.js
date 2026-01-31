@@ -8,7 +8,7 @@ import { jobs } from '../../../../data/jobs';
 
 export default function ApplyPage() {
   const router = useRouter();
-  const params = useParams(); // Changed from useSearchParams to useParams
+  const params = useParams();
   const [user, setUser] = useState(null);
   const [job, setJob] = useState(null);
   const [formData, setFormData] = useState({
@@ -47,8 +47,9 @@ export default function ApplyPage() {
       
       setJob(foundJob);
 
-      // Check if already applied
-      if (foundJob && auth.hasApplied(foundJob.id)) {
+      // Check if already applied - ONLY check, don't redirect
+      if (auth.hasApplied(foundJob.id)) {
+        alert('You have already applied to this job.');
         router.push(`/jobs/${foundJob.id}`);
         return;
       }
@@ -123,6 +124,14 @@ export default function ApplyPage() {
       return;
     }
 
+    // Check again right before submitting
+    if (auth.hasApplied(job.id)) {
+      alert('You have already applied to this job.');
+      setIsSubmitting(false);
+      router.push(`/jobs/${job.id}`);
+      return;
+    }
+
     try {
       // Prepare data for Google Sheets
       const applicationData = {
@@ -143,10 +152,7 @@ export default function ApplyPage() {
         status: 'pending'
       };
 
-      // Send to Google Sheets
-      await submitToGoogleSheets(applicationData);
-
-      // Save to localStorage
+      // First, save to localStorage BEFORE sending to Google Sheets
       const applied = auth.applyForJob(job.id, job.title, job.company);
 
       if (!applied) {
@@ -155,8 +161,12 @@ export default function ApplyPage() {
         return;
       }
 
+      // Then send to Google Sheets
+      await submitToGoogleSheets(applicationData);
+
       // Success!
-      router.push('/success');
+      alert('Application submitted successfully!');
+      router.push('/dashboard');
     } catch (error) {
       console.error('Application error:', error);
       alert('There was an error submitting your application. Please try again.');
@@ -176,8 +186,8 @@ export default function ApplyPage() {
     <div className="apply-page">
       <div className="apply-container">
         <div className="apply-header">
-          <h1>{job ? `Apply for ${job.title}` : 'Job Application'}</h1>
-          {job && <p className="company-tag">at {job.company}</p>}
+          <h1>Apply for {job.title}</h1>
+          <p className="company-tag">at {job.company}</p>
           <p>Complete the application form below. We typically respond within 48 hours.</p>
         </div>
 
@@ -291,7 +301,7 @@ export default function ApplyPage() {
           </div>
 
           <div className="form-actions">
-            <Link href={job ? `/jobs/${job.id}` : '/jobs'} className="cancel-button">
+            <Link href={`/jobs/${job.id}`} className="cancel-button">
               Cancel
             </Link>
             <button type="submit" className="submit-button" disabled={isSubmitting}>

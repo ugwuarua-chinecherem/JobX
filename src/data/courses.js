@@ -22,7 +22,7 @@ export const courses = [
     title: 'Product Design',
     duration: '3 hours',
     description: 'Master the art of product design. Learn how to create user-centered products that solve real problems.',
-    thumbnail: '/images/courses/product-design.jpg',
+    thumbnail: '/images/graphics.PNG',
     youtubeUrl: 'https://www.youtube.com/embed/68w2VwalD5w',
     prerequisites: 'None',
     modules: [
@@ -40,7 +40,7 @@ export const courses = [
     title: 'Digital Marketing',
     duration: '4 hours',
     description: 'Learn digital marketing strategies to grow businesses online. Master social media, SEO, and analytics.',
-    thumbnail: '/images/courses/digital-marketing.jpg',
+    thumbnail: '/images/digital.PNG',
     youtubeUrl: 'https://www.youtube.com/embed/nU-IIXBWlS4',
     prerequisites: 'None',
     modules: [
@@ -58,7 +58,7 @@ export const courses = [
     title: 'Frontend Developer',
     duration: '5 hours',
     description: 'Become a frontend developer and build beautiful, responsive websites with HTML, CSS, JavaScript and React.',
-    thumbnail: '/images/courses/frontend.jpg',
+    thumbnail: '/images/frontend.PNG',
     youtubeUrl: 'https://www.youtube.com/embed/zJSY8tbf_ys',
     prerequisites: 'Basic computer skills',
     modules: [
@@ -76,8 +76,8 @@ export const courses = [
     title: 'AI Automation',
     duration: '3 hours',
     description: 'Learn how to leverage AI tools to automate tasks and increase productivity in business and personal life.',
-    thumbnail: '/images/courses/ai-automation.jpg',
-    youtubeUrl: 'https://www.youtube.com/embed/airIQRZ2fjs',
+    thumbnail: '/images/ai.PNG',
+    youtubeUrl: 'https://www.youtube.com/watch?v=5TxSqvPbnWw&t=146s&pp=ygUbYWkgYXV0b21hdGlvbiBmb3IgYmVnaW5uZXJz',
     prerequisites: 'Basic computer literacy',
     modules: [
       'Introduction to AI & Automation',

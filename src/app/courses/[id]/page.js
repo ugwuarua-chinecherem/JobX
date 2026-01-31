@@ -35,7 +35,7 @@ export default function CourseDetails() {
     }
 
     if (course) {
-      const enrolled = auth.enrollCourse(course.id, course.title);
+      const enrolled = auth.enrollInCourse(course.id, course.title, course.description);
       if (enrolled) {
         router.push(`/courses/${course.id}/learn`);
       } else {
