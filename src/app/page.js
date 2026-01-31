@@ -45,7 +45,6 @@ export default function Home() {
       </section>
 
       {/* Explainer Video Section */}
-{/* Explainer Video Section */}
 <section className="explainer-section">
   <div className="explainer-container">
     <h2>How JobX Works</h2>
@@ -59,40 +58,40 @@ export default function Home() {
       <div className="video-slider-container" id="videoSlider">
         {/* Video 1 */}
         <div className="slider-video active">
-          <iframe 
-            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769864099/video-1_y3pklh.mp4" 
+          <video 
+            src="/videos/video-3.mp4" 
             width="100%" 
             height="500"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            controls
+            controlsList="nodownload"
             title="JobX Introduction"
-          ></iframe>
+          ></video>
           <p className="video-caption">Introduction to JobX Platform</p>
         </div>
 
         {/* Video 2 */}
         <div className="slider-video">
-          <iframe 
+          <video 
             src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769864099/video-1_y3pklh.mp4" 
             width="100%" 
             height="500"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            controls
+            controlsList="nodownload"
             title="How to Apply for Jobs"
-          ></iframe>
+          ></video>
           <p className="video-caption">How to Apply for Jobs</p>
         </div>
 
         {/* Video 3 */}
         <div className="slider-video">
-          <iframe 
-            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769864099/video-1_y3pklh.mp4" 
+          <video 
+            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769872227/video-2_tsbgnk.mp4" 
             width="100%" 
             height="500"
-            allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            controls
+            controlsList="nodownload"
             title="How to Take Courses"
-          ></iframe>
+          ></video>
           <p className="video-caption">How to Enroll in Courses</p>
         </div>
       </div>
@@ -135,42 +134,60 @@ export default function Home() {
 
 <script dangerouslySetInnerHTML={{__html: `
   (function() {
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slider-video');
-    const dots = document.querySelectorAll('.dot');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
+    // Wait for DOM to be fully loaded
+    if (typeof window !== 'undefined') {
+      window.addEventListener('DOMContentLoaded', function() {
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slider-video');
+        const dots = document.querySelectorAll('.dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const videos = document.querySelectorAll('.slider-video video');
 
-    function showSlide(index) {
-      slides.forEach((slide, i) => {
-        slide.classList.remove('active');
-        dots[i].classList.remove('active');
+        function pauseAllVideos() {
+          videos.forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+          });
+        }
+
+        function showSlide(index) {
+          // Pause all videos first
+          pauseAllVideos();
+          
+          // Remove active class from all slides and dots
+          slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            dots[i].classList.remove('active');
+          });
+          
+          // Add active class to current slide and dot
+          slides[index].classList.add('active');
+          dots[index].classList.add('active');
+          currentSlide = index;
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener('click', function() {
+            const newIndex = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+            showSlide(newIndex);
+          });
+        }
+
+        if (nextBtn) {
+          nextBtn.addEventListener('click', function() {
+            const newIndex = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+            showSlide(newIndex);
+          });
+        }
+
+        dots.forEach(function(dot) {
+          dot.addEventListener('click', function() {
+            showSlide(parseInt(dot.dataset.index));
+          });
+        });
       });
-      
-      slides[index].classList.add('active');
-      dots[index].classList.add('active');
-      currentSlide = index;
     }
-
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        const newIndex = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
-        showSlide(newIndex);
-      });
-    }
-
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        const newIndex = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
-        showSlide(newIndex);
-      });
-    }
-
-    dots.forEach(dot => {
-      dot.addEventListener('click', () => {
-        showSlide(parseInt(dot.dataset.index));
-      });
-    });
   })();
 `}} />
 

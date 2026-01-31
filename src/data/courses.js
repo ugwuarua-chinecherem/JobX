@@ -4,7 +4,7 @@ export const courses = [
     title: 'Backend Developer',
     duration: '3 hours',
     description: 'Learn backend development from scratch. Master server-side programming, databases, and API development.',
-    thumbnail: 'https://images.unsplash.com/photo-1565687981296-535f09db714e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YmFja2VuZCUyMGRldmVsb3BlcnxlbnwwfHwwfHx8MA%3D%3D',
+    thumbnail: '/images/backend.PNG',
     youtubeUrl: 'https://www.youtube.com/embed/cbSrsYiRamo',
     prerequisites: 'Basic understanding of programming',
     modules: [

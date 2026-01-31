@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '../../../../utils/auth';
 import { jobs } from '../../../../data/jobs';
@@ -8,7 +8,7 @@ import { jobs } from '../../../../data/jobs';
 
 export default function ApplyPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useParams(); // Changed from useSearchParams to useParams
   const [user, setUser] = useState(null);
   const [job, setJob] = useState(null);
   const [formData, setFormData] = useState({
@@ -33,11 +33,18 @@ export default function ApplyPage() {
     const currentUser = auth.getUser();
     setUser(currentUser);
 
-    // Get job ID from URL query parameter
-    const jobId = searchParams.get('jobId');
+    // Get job ID from URL params (from /jobs/7/apply)
+    const jobId = params?.id;
     
     if (jobId) {
       const foundJob = jobs.find(j => j.id === parseInt(jobId));
+      
+      if (!foundJob) {
+        alert('Job not found. Please try again.');
+        router.push('/jobs');
+        return;
+      }
+      
       setJob(foundJob);
 
       // Check if already applied
@@ -45,6 +52,10 @@ export default function ApplyPage() {
         router.push(`/jobs/${foundJob.id}`);
         return;
       }
+    } else {
+      alert('Job not found. Please try again.');
+      router.push('/jobs');
+      return;
     }
 
     // Pre-fill form with user data
@@ -59,7 +70,7 @@ export default function ApplyPage() {
         state: currentUser.state || ''
       }));
     }
-  }, [router, searchParams]);
+  }, [router, params]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,7 +102,7 @@ export default function ApplyPage() {
       }).then(() => {
         console.log('Application sent to Google Sheets');
       }).catch((error) => {
-        console.log('Google Sheets submission attempted');
+        console.log('Google Sheets submission attempted:', error);
       });
       
       return true;
@@ -108,6 +119,7 @@ export default function ApplyPage() {
     if (!job) {
       alert('Job not found. Please try again.');
       setIsSubmitting(false);
+      router.push('/jobs');
       return;
     }
 
@@ -152,7 +164,7 @@ export default function ApplyPage() {
     }
   };
 
-  if (!user) {
+  if (!user || !job) {
     return (
       <div className="apply-page-loading">
         <p>Loading...</p>
