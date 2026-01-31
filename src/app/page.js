@@ -60,7 +60,7 @@ export default function Home() {
         {/* Video 1 */}
         <div className="slider-video active">
           <iframe 
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769864099/video-1_y3pklh.mp4" 
             width="100%" 
             height="500"
             allowFullScreen
@@ -73,11 +73,11 @@ export default function Home() {
         {/* Video 2 */}
         <div className="slider-video">
           <iframe 
-            src="videos/video-1.mp4" 
+            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769864099/video-1_y3pklh.mp4" 
             width="100%" 
             height="500"
             allowFullScreen
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             title="How to Apply for Jobs"
           ></iframe>
           <p className="video-caption">How to Apply for Jobs</p>
@@ -86,7 +86,7 @@ export default function Home() {
         {/* Video 3 */}
         <div className="slider-video">
           <iframe 
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+            src="https://res.cloudinary.com/dsv5glxli/video/upload/v1769864099/video-1_y3pklh.mp4" 
             width="100%" 
             height="500"
             allowFullScreen
